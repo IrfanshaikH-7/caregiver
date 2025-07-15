@@ -10,12 +10,11 @@ import {
   updateTask,
 } from "../api/mutations/scheduleMutations";
 import type { DetailedSchedule } from "../types/schedule";
-import Title from "../components/common/Title";
-import { calendar, clock, location as locationIcon } from "../assets";
 import TaskList from "../components/schedule/TaskList";
 import LocationMap from "../components/schedule/LocationMap";
 import ActionButtons from "../components/schedule/ActionButtons";
 import ServiceNotes from "../components/schedule/ServiceNotes";
+import ScheduleCard from "../components/schedule/ScheduleCard";
 import type { LocationData } from "../types/scheduleOperations";
 import { useToast } from "../context/ToastContext";
 
@@ -35,7 +34,6 @@ const ScheduleDetailPage: React.FC = () => {
     data: schedule,
     isLoading,
     error,
-    refetch,
   } = useQuery<DetailedSchedule, Error>({
     queryKey: ["schedule", scheduleId],
     queryFn: () => getScheduleById(scheduleId || ""),
@@ -104,31 +102,6 @@ const ScheduleDetailPage: React.FC = () => {
       setIsActionLoading(false);
     },
   });
-
-  // Legacy task mutation - not used anymore
-  // Keeping for reference
-  /*
-  const legacyUpdateTaskMutation = useMutation({
-    mutationFn: ({
-      scheduleId,
-      taskId,
-      status,
-    }: {
-      scheduleId: string;
-      taskId: string;
-      status: "pending" | "completed";
-    }) => updateTaskStatus(scheduleId, taskId, { status }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedule", scheduleId] });
-    },
-    onError: (error: Error) => {
-      setActionError(`Failed to update task: ${error.message}`);
-      setTimeout(() => setActionError(null), 5000);
-    },
-  });
-  */
-
-  // Notes are now read-only, so we don't need a save notes mutation
 
   // Helper function to request location permission directly
   const requestLocationPermission = (): Promise<GeolocationPosition> => {
@@ -390,12 +363,12 @@ const ScheduleDetailPage: React.FC = () => {
       year: "numeric",
     });
   };
-
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
+      hour12: false,
     });
   };
 
@@ -405,11 +378,12 @@ const ScheduleDetailPage: React.FC = () => {
 
   return (
     <>
-      <Title>
-        <div className="flex items-center">
+      {/* Header with reduced width to match content */}
+      <div className="flex justify-center w-full md:mt-4">
+        <div className="w-full  flex items-center mb-4">
           <button
             onClick={() => navigate(-1)}
-            className="mr-2 text-gray-600 hover:text-gray-800"
+            className="!p-0 mr-2 text-gray-600 hover:text-gray-800"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -426,137 +400,86 @@ const ScheduleDetailPage: React.FC = () => {
               />
             </svg>
           </button>
-          <span className="font-roboto font-semibold text-task-title leading-task-title">
+          <span className="font-roboto font-semibold text-[24px] leading-task-title">
             Schedule Details
           </span>
         </div>
-      </Title>
+      </div>
 
-      <div className="mt-4 rounded-2xl p-4 sm:p-8">
-        <h2 className="font-roboto font-semibold text-activity leading-activity text-center text-activity-bg">
-          {schedule.ServiceName}
-        </h2>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center mt-4 sm:mt-8 mb-4 sm:mb-8">
-          <img
-            src={
-              schedule.ClientInfo.ProfilePicture ||
-              "https://via.placeholder.com/60"
-            }
-            alt="Profile"
-            className="w-16 h-16 rounded-full mb-2 sm:mb-0 sm:mr-3 object-cover"
-          />
-          <div className="text-center sm:text-left">
-            <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text">
-              {schedule.ClientInfo.FirstName} {schedule.ClientInfo.LastName}
-            </h3>
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-center justify-around bg-secondary rounded-xl text-gray-700 py-4 mb-8">
-          <div className="flex items-center mb-2 sm:mb-0">
-            <img
-              src={calendar}
-              alt="calendar"
-              className="w-6 h-6 rounded-full mr-2"
-            />
-            <span className="font-roboto font-normal text-description leading-description text-task-text">
-              {formatDate(schedule.ScheduledSlot.From)}
-            </span>
-          </div>
-          <div className="flex items-center">
-            <img
-              src={clock}
-              alt="clock"
-              className="w-5 h-5 rounded-full mr-2"
-            />
-            <span className="font-roboto font-normal text-description leading-description text-task-text">
-              {formatTimeRange(
+      {/* Content area */}
+      <div className="flex flex-col items-center w-full">
+        <div className="w-full ">
+          <div className="rounded-2xl p-4 sm:px-0">
+            <ScheduleCard
+              id={schedule.ID}
+              status={visitStatus}
+              patientName={`${schedule.ClientInfo.FirstName} ${schedule.ClientInfo.LastName}`}
+              serviceName={schedule.ServiceName}
+              location={formatAddress(schedule.ClientInfo.Location)}
+              date={formatDate(schedule.ScheduledSlot.From)}
+              timeRange={formatTimeRange(
                 schedule.ScheduledSlot.From,
                 schedule.ScheduledSlot.To
               )}
-            </span>
-          </div>
-        </div>
-
-        <div className="mb-[24px]">
-          <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-2">
-            Client Contact:
-          </h3>
-          <div className="flex items-center mb-2">
-            <span className="mr-2">✉</span>
-            <span className="font-roboto font-normal text-description leading-description text-task-text">
-              {schedule.ClientInfo.Email}
-            </span>
-          </div>
-        </div>
-
-        <div className="mb-[24px]">
-          <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-2">
-            Address:
-          </h3>
-          <div className="flex items-start">
-            <img
-              src={locationIcon}
-              alt="location"
-              className="w-5 h-5 mt-1 mr-2"
+              profilePicture={schedule.ClientInfo.ProfilePicture}
+              clientInfo={schedule.ClientInfo}
+              variant="centered"
+              asLink={false}
+              className="mb-6"
             />
-            <span className="font-roboto font-normal text-description leading-description text-task-text">
-              {formatAddress(schedule.ClientInfo.Location)}
-            </span>
-          </div>
-        </div>
 
-        {/* Task List Component */}
-        <TaskList
-          tasks={schedule.Tasks.map((task) => ({
-            id: task.ID,
-            title: task.Title,
-            description: task.Description,
-            status: task.Status.toLowerCase() as "pending" | "completed",
-            feedback: task.Feedback || undefined,
-          }))}
-          visitStatus={visitStatus}
-          onTaskUpdate={handleTaskUpdate}
-        />
+            {/* Task List Component */}
+            <TaskList
+              tasks={schedule.Tasks.map((task) => ({
+                id: task.ID,
+                title: task.Title,
+                description: task.Description,
+                status: task.Status.toLowerCase() as "pending" | "completed",
+                feedback: task.Feedback || undefined,
+              }))}
+              visitStatus={visitStatus}
+              onTaskUpdate={handleTaskUpdate}
+            />
 
-        {/* Service Notes Component */}
-        <ServiceNotes notes={schedule.ServiceNote} />
+            {/* Service Notes Component */}
+            <ServiceNotes notes={schedule.ServiceNote} />
 
-        {/* Location Map Component for Check-in Location */}
-        {(schedule.CheckinTime || visitStatus === "in_progress") && (
-          <div className="mt-[24px]">
-            <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-8">
-              Clock-In Location
-            </h3>
-            <LocationMap
-              location={schedule.CheckinLocation}
-              address={schedule.ClientInfo.Location}
+            {/* Location Map Component for Check-in Location */}
+            {(schedule.CheckinTime || visitStatus === "in_progress") && (
+              <div className="mt-[24px]">
+                <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-8">
+                  Clock-In Location
+                </h3>
+                <LocationMap
+                  location={schedule.CheckinLocation}
+                  address={schedule.ClientInfo.Location}
+                />
+              </div>
+            )}
+
+            {/* Success/Error messages */}
+            {actionSuccess && (
+              <div className="mt-16 bg-green-50 text-green-800 p-8 rounded-task font-roboto font-normal text-description leading-description">
+                {actionSuccess}
+              </div>
+            )}
+
+            {actionError && (
+              <div className="mt-16 bg-red-50 text-red-700 p-8 rounded-task font-roboto font-normal text-description leading-description">
+                {actionError}
+              </div>
+            )}
+
+            {/* Action Buttons Component */}
+            <ActionButtons
+              visitStatus={visitStatus}
+              onCheckin={handleCheckIn}
+              onCheckout={handleCheckOut}
+              onCancelCheckin={handleCancelCheckIn}
+              isLoading={isActionLoading}
             />
           </div>
-        )}
-
-        {/* Success/Error messages */}
-        {actionSuccess && (
-          <div className="mt-16 bg-green-50 text-green-800 p-8 rounded-task font-roboto font-normal text-description leading-description">
-            {actionSuccess}
-          </div>
-        )}
-
-        {actionError && (
-          <div className="mt-16 bg-red-50 text-red-700 p-8 rounded-task font-roboto font-normal text-description leading-description">
-            {actionError}
-          </div>
-        )}
-
-        {/* Action Buttons Component */}
-        <ActionButtons
-          visitStatus={visitStatus}
-          onCheckin={handleCheckIn}
-          onCheckout={handleCheckOut}
-          onCancelCheckin={handleCancelCheckIn}
-          isLoading={isActionLoading}
-        />
+        </div>
       </div>
     </>
   );

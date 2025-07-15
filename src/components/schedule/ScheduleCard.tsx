@@ -12,7 +12,15 @@ import type { DetailedSchedule } from "../../types/schedule";
 
 interface ScheduleCardProps {
   id: string;
-  status: "Scheduled" | "In progress" | "Completed" | "Cancelled";
+  status:
+    | "Scheduled"
+    | "In progress"
+    | "Completed"
+    | "Cancelled"
+    | "upcoming"
+    | "in_progress"
+    | "completed"
+    | "missed";
   patientName: string;
   serviceName: string;
   location: string;
@@ -20,6 +28,14 @@ interface ScheduleCardProps {
   timeRange: string;
   profilePicture?: string;
   clientInfo?: DetailedSchedule["ClientInfo"];
+  variant?: "card" | "detail" | "centered";
+  showActions?: boolean;
+  showMoreButton?: boolean;
+  showDateTimeSection?: boolean;
+  showLocationSection?: boolean;
+  email?: string;
+  className?: string;
+  asLink?: boolean;
 }
 
 const ScheduleCard: React.FC<ScheduleCardProps> = ({
@@ -32,22 +48,51 @@ const ScheduleCard: React.FC<ScheduleCardProps> = ({
   timeRange,
   profilePicture,
   clientInfo,
+  variant = "card",
+  showActions = true,
+  showMoreButton = true,
+  showDateTimeSection = true,
+  showLocationSection = true,
+  email,
+  className = "",
+  asLink = true,
 }) => {
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Scheduled":
+    const normalizedStatus = status.toLowerCase();
+    switch (normalizedStatus) {
+      case "scheduled":
+      case "upcoming":
         return "bg-caregray text-white";
-      case "In progress":
+      case "in progress":
+      case "in_progress":
         return "bg-[#ED6C02] text-white";
-      case "Completed":
+      case "completed":
         return "bg-[#2E7D32] text-white";
-      case "Cancelled":
+      case "cancelled":
+      case "missed":
         return "bg-[#D32F2F] text-white";
       default:
         return "bg-[#D32F2F] text-white";
     }
   };
-  console.log("profilePicture", profilePicture);
+
+  // Format the status for display
+  const displayStatus = () => {
+    const normalizedStatus = status.toLowerCase();
+    switch (normalizedStatus) {
+      case "upcoming":
+        return "Scheduled";
+      case "in_progress":
+        return "In progress";
+      case "completed":
+        return "Completed";
+      case "missed":
+        return "Cancelled";
+      default:
+        return status;
+    }
+  };
+
   // Format the full name from client info if available
   const fullName = clientInfo
     ? `${clientInfo.FirstName} ${clientInfo.LastName}`
@@ -56,11 +101,6 @@ const ScheduleCard: React.FC<ScheduleCardProps> = ({
   // We'll use a ref to track if the component is mounted
   const isMounted = React.useRef(true);
 
-  // Set initial image source to placeholder
-  const [imgSrc, setImgSrc] = React.useState<string>(
-    "https://via.placeholder.com/40"
-  );
-
   // Cleanup function to prevent state updates after unmount
   React.useEffect(() => {
     return () => {
@@ -68,57 +108,94 @@ const ScheduleCard: React.FC<ScheduleCardProps> = ({
     };
   }, []);
 
-  // Function to safely set image source with error handling
-  const safelySetImage = (url: string | undefined) => {
-    if (!url) return;
+  // Determine if we should render as a link or a div
+  const CardWrapper = asLink ? Link : "div";
+  const wrapperProps = asLink ? { to: `/schedule/${id}` } : {};
 
-    // Create a new image to test loading
-    const img = new Image();
-    img.onload = () => {
-      if (isMounted.current) {
-        setImgSrc(url);
-      }
-    };
-    img.onerror = () => {
-      // If image fails to load, we keep the placeholder
-      console.log("Failed to load image:", url);
-    };
-    img.src = url;
-  };
+  // Determine the appropriate classes based on variant
+  const cardClasses =
+    variant === "card"
+      ? "p-5 rounded-2xl shadow-sm bg-white"
+      : variant === "centered"
+      ? "rounded-2xl bg-[#2DA6FF0A] "
+      : "rounded-2xl bg-white";
 
-  // Try to load the profile picture when component mounts or props change
-  React.useEffect(() => {
-    if (profilePicture) {
-      safelySetImage(profilePicture);
-    } else if (clientInfo?.ProfilePicture) {
-      safelySetImage(clientInfo.ProfilePicture);
-    }
-  }, [profilePicture, clientInfo]);
+  // Centered variant content
+  if (variant === "centered") {
+    return (
+      <CardWrapper {...wrapperProps} className={`${cardClasses} ${className}`}>
+        <div className={`flex flex-col items-center text-center py-2 px-2`}>
+          {/* Service Name */}
+          <h2 className="font-roboto font-semibold text-activity leading-activity text-activity-bg mb-4">
+            {serviceName}
+          </h2>
 
+          {/* Profile Picture and Name */}
+          <div className="flex  items-center mb-2 gap-[8px]">
+            <img
+              src={
+                profilePicture || clientInfo?.ProfilePicture || "invalid.jpg"
+              }
+              alt="Profile"
+              className="w-16 h-16 rounded-full mb-2 object-cover"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "https://picsum.photos/200/300";
+              }}
+            />
+            <h3 className="text-base sm:text-xl font-semibold font-roboto">
+              {fullName}
+            </h3>
+          </div>
+
+          {/* Date and Time Section */}
+          <div className="flex items-center justify-between w-full bg-[#2DA6FF14] rounded-xl text-gray-700 py-3 px-4">
+            <div className="flex items-center justify-end w-full">
+              <img src={calendar} alt="calendar" className="w-5 h-5 mr-2" />
+              <span className="font-roboto text-sm">{date}</span>
+            </div>
+            <span className="text-[#00000099] mx-1 w-full">|</span>
+
+            <div className="flex items-center w-full">
+              <img src={clock} alt="clock" className="w-5 h-5 mr-2" />
+              <span className="font-roboto text-sm">{timeRange}</span>
+            </div>
+          </div>
+        </div>
+      </CardWrapper>
+    );
+  }
+
+  // Standard content for card and detail variants
   return (
-    <Link to={`/schedule/${id}`} className="p-5 rounded-2xl shadow-sm bg-white">
+    <CardWrapper {...wrapperProps} className={`${cardClasses} ${className}`}>
+      {/* Status and More Button */}
       <div className="flex justify-between items-start mb-2">
         <span
           className={`px-3 py-1 rounded-full text-[13px] font-semibold ${getStatusColor(
             status
           )}`}
         >
-          {status}
+          {displayStatus()}
         </span>
-        <div
-          role="button"
-          className="text-gray-500 hover:text-gray-700 cursor-pointer sm:-mt-2"
-        >
-          <img
-            src={more_horizontal}
-            alt="more"
-            className="h-5 sm:h-8 w-5 sm:w-8"
-          />
-        </div>
+        {showMoreButton && (
+          <div
+            role="button"
+            className="text-gray-500 hover:text-gray-700 cursor-pointer sm:-mt-2"
+          >
+            <img
+              src={more_horizontal}
+              alt="more"
+              className="h-5 sm:h-8 w-5 sm:w-8"
+            />
+          </div>
+        )}
       </div>
+
+      {/* Client Info Section */}
       <div className="flex items-center mb-2">
         <img
-          src={profilePicture || "invalid.jpg"}
+          src={profilePicture || clientInfo?.ProfilePicture || "invalid.jpg"}
           alt="Profile"
           className="w-10 sm:w-16 h-10 sm:h-16 rounded-full mr-3 object-cover"
           onError={(e) => {
@@ -133,52 +210,79 @@ const ScheduleCard: React.FC<ScheduleCardProps> = ({
           <p className="text-gray-600 text-xs sm:text-base font-roboto">
             {serviceName}
           </p>
+          {variant === "detail" && email && (
+            <div className="flex items-center mt-2">
+              <span className="mr-2">✉</span>
+              <span className="font-roboto font-normal text-description leading-description text-task-text">
+                {email}
+              </span>
+            </div>
+          )}
         </div>
       </div>
-      <div className="flex items-center text-xs sm:text-base text-gray-500 mb-4">
-        <img
-          src={locationIcon}
-          alt="location"
-          className="w-5 sm:w-6 h-5 sm:h-6 rounded-full mr-1"
-        />
-        <span className="font-roboto">{location}</span>
-      </div>
 
-      <div className="flex items-center text-xs sm:text-base justify-around bg-secondary rounded-xl text-gray-700 py-2 sm:py-3 mb-4">
-        <div className="flex items-center">
+      {/* Location Section */}
+      {showLocationSection && (
+        <div className="flex items-start text-xs sm:text-base text-gray-500 mb-4">
           <img
-            src={calendar}
-            alt="calendar"
-            className="w-6 h-6 rounded-full mr-1"
+            src={locationIcon}
+            alt="location"
+            className="w-5 sm:w-6 h-5 sm:h-6 rounded-full mr-1 mt-1"
           />
-          <span className="font-roboto">{date}</span>
+          <span className="font-roboto">{location}</span>
         </div>
-        <div className="flex items-center">
-          <img src={clock} alt="clock" className="w-5 h-5 rounded-full mr-1" />
-          <span className="font-roboto">{timeRange}</span>
-        </div>
-      </div>
+      )}
 
-      {status === "Scheduled" && <Button>Clock-In Now</Button>}
-      {status === "In progress" && (
-        <div className="flex space-x-2">
-          <Button variant="ghost" className="flex-1">
-            View Progress
-          </Button>
-          <Button className="flex-1">Clock-Out Now</Button>
+      {/* Date and Time Section */}
+      {showDateTimeSection && (
+        <div className="flex items-center text-xs sm:text-base justify-around bg-secondary rounded-xl text-gray-700 py-2 sm:py-3 mb-4">
+          <div className="flex items-center">
+            <img
+              src={calendar}
+              alt="calendar"
+              className="w-6 h-6 rounded-full mr-1"
+            />
+            <span className="font-roboto">{date}</span>
+          </div>
+          <span className="text-gray-300 mx-1">|</span>
+
+          <div className="flex items-center">
+            <img
+              src={clock}
+              alt="clock"
+              className="w-5 h-5 rounded-full mr-1"
+            />
+            <span className="font-roboto">{timeRange}</span>
+          </div>
         </div>
       )}
-      {status === "Completed" && <Button variant="ghost">View Report</Button>}
-      {status === "Cancelled" && (
-        <Button
-          variant="ghost"
-          disabled
-          className="border-red-600 text-red-600 disabled:border-red-400 disabled:text-red-400"
-        >
-          Schedule Cancelled
-        </Button>
+
+      {/* Action Buttons - Only shown in card variant and if showActions is true */}
+      {variant === "card" && showActions && (
+        <>
+          {status === "Scheduled" || status === "upcoming" ? (
+            <Button>Clock-In Now</Button>
+          ) : status === "In progress" || status === "in_progress" ? (
+            <div className="flex space-x-2">
+              <Button variant="ghost" className="flex-1">
+                View Progress
+              </Button>
+              <Button className="flex-1">Clock-Out Now</Button>
+            </div>
+          ) : status === "Completed" || status === "completed" ? (
+            <Button variant="ghost">View Report</Button>
+          ) : (
+            <Button
+              variant="ghost"
+              disabled
+              className="border-red-600 text-red-600 disabled:border-red-400 disabled:text-red-400"
+            >
+              Schedule Cancelled
+            </Button>
+          )}
+        </>
       )}
-    </Link>
+    </CardWrapper>
   );
 };
 

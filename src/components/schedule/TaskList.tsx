@@ -101,7 +101,7 @@ const TaskList: React.FC<TaskListProps> = ({
           {tasks.map((task) => (
             <div
               key={task.id}
-              className="bg-white p-4 rounded-task border border-gray-100"
+              className="bg-white p-4 rounded-[8px] border border-gray-100"
               style={{
                 boxShadow: "0px 0px 7px 0px rgba(0, 0, 0, 0.05)",
               }}

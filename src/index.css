@@ -33,7 +33,7 @@ html {
 
 @layer base {
   body {
-    @apply px-4 md:px-24 pt-12 m-0;
+    @apply px-4 md:px-24 pt-8 m-0;
   }
 }
 
