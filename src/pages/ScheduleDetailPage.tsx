@@ -400,7 +400,7 @@ const ScheduleDetailPage: React.FC = () => {
               />
             </svg>
           </button>
-          <span className="font-roboto font-semibold text-[24px] leading-task-title">
+          <span className="font-roboto font-semibold text-[1.5rem] leading-task-title">
             Schedule Details
           </span>
         </div>
@@ -446,7 +446,7 @@ const ScheduleDetailPage: React.FC = () => {
 
             {/* Location Map Component for Check-in Location */}
             {(schedule.CheckinTime || visitStatus === "in_progress") && (
-              <div className="mt-[24px]">
+              <div className="mt-[1.5rem]">
                 <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-8">
                   Clock-In Location
                 </h3>

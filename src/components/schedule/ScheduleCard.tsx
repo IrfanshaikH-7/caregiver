@@ -150,7 +150,7 @@ const ScheduleCard: React.FC<ScheduleCardProps> = ({
 
           {/* Date and Time Section */}
           <div className="flex items-center justify-between w-full bg-[#2DA6FF14] rounded-xl text-gray-700 py-3 px-4">
-            <div className="flex items-center justify-end w-full">
+            <div className="flex items-center justify-end w-full md:text-sm text-[12px]">
               <img src={calendar} alt="calendar" className="w-5 h-5 mr-2" />
               <span className="font-roboto text-sm">{date}</span>
             </div>
@@ -158,7 +158,9 @@ const ScheduleCard: React.FC<ScheduleCardProps> = ({
 
             <div className="flex items-center w-full">
               <img src={clock} alt="clock" className="w-5 h-5 mr-2" />
-              <span className="font-roboto text-sm">{timeRange}</span>
+              <span className="font-roboto md:text-sm text-[12px]">
+                {timeRange}
+              </span>
             </div>
           </div>
         </div>
