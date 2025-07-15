@@ -12,12 +12,34 @@ import type {
   SaveNotesResponse,
 } from "../../types/scheduleOperations";
 
-export const createSchedule = (data: any) => {
+interface CreateScheduleData {
+  clientUserId: string;
+  assignedUserId: string;
+  serviceName: string;
+  scheduledSlot: {
+    from: string;
+    to: string;
+  };
+  tasks?: string[];
+  serviceNote?: string;
+}
+
+interface UpdateScheduleData {
+  serviceName?: string;
+  scheduledSlot?: {
+    from: string;
+    to: string;
+  };
+  visitStatus?: "upcoming" | "in_progress" | "completed" | "missed";
+  serviceNote?: string;
+}
+
+export const createSchedule = (data: CreateScheduleData) => {
   // Placeholder for creating schedule data
   return Promise.resolve(data);
 };
 
-export const updateSchedule = (id: string, data: any) => {
+export const updateSchedule = (id: string, data: UpdateScheduleData) => {
   // Placeholder for updating schedule data
   return Promise.resolve({ id, ...data });
 };
@@ -154,6 +176,14 @@ export const saveServiceNotes = async (
  * @param data Task update data including status and feedback
  * @returns Promise with task update response
  */
+interface TaskUpdateResponse {
+  id: string;
+  status: "completed" | "not_completed";
+  done: boolean;
+  feedback?: string;
+  updatedAt: string;
+}
+
 export const updateTask = async (
   taskId: string,
   data: {
@@ -161,7 +191,7 @@ export const updateTask = async (
     done: boolean;
     feedback?: string;
   }
-): Promise<any> => {
+): Promise<TaskUpdateResponse> => {
   try {
     const response = await api.post(`/v1/tasks/${taskId}/update`, data);
     return response.data;

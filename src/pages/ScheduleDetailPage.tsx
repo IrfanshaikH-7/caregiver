@@ -333,7 +333,20 @@ const ScheduleDetailPage: React.FC = () => {
   }
 
   // Format address from client location
-  const formatAddress = (location: any) => {
+  const formatAddress = (
+    location:
+      | {
+          house_number: string;
+          street: string;
+          city: string;
+          state: string;
+          pincode: string;
+          lat: number;
+          long: number;
+        }
+      | null
+      | undefined
+  ) => {
     if (!location) return "";
 
     const parts = [

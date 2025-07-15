@@ -1,17 +1,20 @@
-import React from "react";
-import ScheduleCard from "../components/schedule/ScheduleCard";
-import { getSchedule, getUserData } from "../api/queries";
+import React, { useEffect, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { getSchedule, getUserData } from "../api/queries";
+import LazyScheduleCard from "../components/schedule/LazyScheduleCard";
 import Title from "../components/common/Title";
+import MobileHeader from "../components/common/MobileHeader";
+import DashboardSkeleton from "../components/common/DashboardSkeleton";
+import ScheduleCardSkeleton from "../components/schedule/ScheduleCardSkeleton";
+import ErrorBoundary from "../components/common/ErrorBoundary";
 import type { Schedule } from "../types/schedule";
+import type { User } from "../types/user";
 import {
   mapVisitStatusToCardStatus,
   formatDateTime,
   formatTimeRange,
   formatLocation,
 } from "../utils/scheduleUtils";
-import MobileHeader from "../components/common/MobileHeader";
 
 const Dashboard: React.FC = () => {
   const {
@@ -29,7 +32,7 @@ const Dashboard: React.FC = () => {
     data: userData,
     isLoading: isUserLoading,
     error: userError,
-  } = useQuery<any, Error>({
+  } = useQuery<User, Error>({
     queryKey: ["user", userId],
     queryFn: () => getUserData(userId),
   });
@@ -37,7 +40,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     if (userData) {
       localStorage.setItem("userData", JSON.stringify(userData));
-      console.log("User data stored in localStorage:", userData);
+      // User data stored successfully in localStorage
     }
   }, [userData]);
 
@@ -81,8 +84,9 @@ const Dashboard: React.FC = () => {
     ];
   }, [schedules]);
 
-  if (isLoading || isUserLoading)
-    return <div>Loading schedules and user data...</div>;
+  if (isLoading || isUserLoading) {
+    return <DashboardSkeleton />;
+  }
 
   // Combine error handling for both queries
   if (error || userError) {
@@ -135,20 +139,23 @@ const Dashboard: React.FC = () => {
       <div className="flex flex-col gap-2 sm:gap-4 mt-5 pb-28">
         {schedules &&
           schedules.map((schedule: Schedule) => (
-            <ScheduleCard
-              profilePicture={schedule.ClientInfo.ProfilePicture}
-              key={schedule.ID}
-              id={schedule.ID}
-              status={mapVisitStatusToCardStatus(schedule.VisitStatus)}
-              patientName={`${schedule.ClientInfo.FirstName} ${schedule.ClientInfo.LastName}`}
-              serviceName={schedule.ServiceName}
-              location={formatLocation(schedule.ClientInfo)}
-              date={formatDateTime(schedule.ScheduledSlot.From)}
-              timeRange={formatTimeRange(
-                schedule.ScheduledSlot.From,
-                schedule.ScheduledSlot.To
-              )}
-            />
+            <ErrorBoundary key={schedule.ID}>
+              <Suspense fallback={<ScheduleCardSkeleton variant="card" />}>
+                <LazyScheduleCard
+                  profilePicture={schedule.ClientInfo.ProfilePicture}
+                  id={schedule.ID}
+                  status={mapVisitStatusToCardStatus(schedule.VisitStatus)}
+                  patientName={`${schedule.ClientInfo.FirstName} ${schedule.ClientInfo.LastName}`}
+                  serviceName={schedule.ServiceName}
+                  location={formatLocation(schedule.ClientInfo)}
+                  date={formatDateTime(schedule.ScheduledSlot.From)}
+                  timeRange={formatTimeRange(
+                    schedule.ScheduledSlot.From,
+                    schedule.ScheduledSlot.To
+                  )}
+                />
+              </Suspense>
+            </ErrorBoundary>
           ))}
       </div>
     </>
