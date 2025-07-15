@@ -39,11 +39,14 @@ const TaskList: React.FC<TaskListProps> = ({
     tasks.forEach((task) => {
       if (task.feedback) {
         initialReasons[task.id] = task.feedback;
-        // If there's feedback, also show the input field
-        setShowReasonInput(task.id);
       }
 
       initialOptions[task.id] = task.status === "completed" ? "yes" : "no";
+
+      // Only show reason input for tasks with "no" status and feedback
+      if (task.status !== "completed" && task.feedback) {
+        setShowReasonInput(task.id);
+      }
     });
 
     setTaskReasons(initialReasons);
@@ -60,8 +63,11 @@ const TaskList: React.FC<TaskListProps> = ({
     }));
 
     if (status === "no") {
+      // Show reason input when "No" is selected
       setShowReasonInput(taskId);
     } else {
+      // Hide reason input when "Yes" is selected
+      setShowReasonInput(null);
       // Send update for "yes" option
       onTaskUpdate(taskId, "completed");
     }
@@ -82,35 +88,43 @@ const TaskList: React.FC<TaskListProps> = ({
   };
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Tasks:</h3>
+    <div className="mt-8">
+      <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-4">
+        Tasks:
+      </h3>
       {tasks.length === 0 ? (
-        <p className="text-gray-500">No tasks assigned for this schedule.</p>
+        <p className="font-roboto text-description text-gray-500">
+          No tasks assigned for this schedule.
+        </p>
       ) : (
         <div className="space-y-4">
           {tasks.map((task) => (
             <div
               key={task.id}
-              className="mb-6 bg-white p-4 rounded-lg border border-gray-100"
+              className="bg-white p-4 rounded-task border border-gray-100"
               style={{
                 boxShadow: "0px 0px 7px 0px rgba(0, 0, 0, 0.05)",
               }}
             >
               <div className="mb-2">
-                <h4 className="text-teal-700 font-medium">{task.title}</h4>
-                <p className="text-gray-600 text-sm">{task.description}</p>
+                <h4 className="font-roboto font-semibold text-task-title leading-task-title text-task-text">
+                  {task.title}
+                </h4>
+                <p className="font-roboto font-normal text-description leading-description text-task-text mt-2">
+                  {task.description}
+                </p>
               </div>
 
               {isInteractive ? (
-                <div>
-                  <div className="flex items-center mt-2">
+                <div className="mt-4">
+                  <div className="flex items-center gap-[16px]">
                     <button
                       onClick={() => handleTaskToggle(task.id, "yes")}
-                      className={`flex items-center mr-4 ${
+                      className={`flex items-center ${
                         selectedOptions[task.id] === "yes"
                           ? "text-green-600"
                           : "text-gray-500"
-                      }`}
+                      } w-button-select h-button-select rounded-button bg-button-select-bg p-2`}
                     >
                       <svg
                         className={`h-5 w-5 mr-1 ${
@@ -140,7 +154,7 @@ const TaskList: React.FC<TaskListProps> = ({
                         selectedOptions[task.id] === "no"
                           ? "text-red-500"
                           : "text-gray-500"
-                      }`}
+                      } w-button-select h-button-select rounded-button bg-button-select-bg p-2`}
                     >
                       <svg
                         className="h-5 w-5 mr-1 text-red-500"
@@ -160,11 +174,11 @@ const TaskList: React.FC<TaskListProps> = ({
                   </div>
 
                   {showReasonInput === task.id && (
-                    <div className="mt-2">
+                    <div className="mt-4">
                       <input
                         type="text"
                         placeholder="Add reason..."
-                        className="w-full p-3 border border-gray-200 rounded-full focus:outline-none focus:ring-1 focus:ring-teal-500 text-sm"
+                        className="w-full p-2 border border-[#0000003B] rounded-[14px] focus:outline-none focus:ring-0 focus:ring-[#0000003B] font-roboto font-normal text-input-text leading-input-text"
                         value={taskReasons[task.id] || ""}
                         onChange={(e) =>
                           handleReasonChange(task.id, e.target.value)
@@ -180,10 +194,10 @@ const TaskList: React.FC<TaskListProps> = ({
                   )}
                 </div>
               ) : (
-                <div>
-                  <div className="flex items-center mt-2">
+                <div className="mt-4">
+                  <div className="flex items-center">
                     {task.status === "completed" ? (
-                      <div className="flex items-center text-green-600">
+                      <div className="flex items-center text-green-600 w-button-select h-button-select rounded-button bg-button-select-bg p-2">
                         <svg
                           className="h-5 w-5 mr-1"
                           fill="none"
@@ -200,7 +214,7 @@ const TaskList: React.FC<TaskListProps> = ({
                         <span>Yes</span>
                       </div>
                     ) : (
-                      <div className="flex items-center text-red-500">
+                      <div className="flex items-center text-red-500 w-button-select h-button-select rounded-button bg-button-select-bg p-2">
                         <svg
                           className="h-5 w-5 mr-1"
                           fill="none"
@@ -221,8 +235,8 @@ const TaskList: React.FC<TaskListProps> = ({
 
                   {/* Display feedback for non-interactive tasks */}
                   {task.feedback && (
-                    <div className="mt-2">
-                      <div className="w-full p-3 border border-gray-200 rounded-full bg-gray-50 text-sm text-gray-600">
+                    <div className="mt-4">
+                      <div className="w-full p-2 border border-gray-200 rounded-full bg-gray-50 font-roboto font-normal text-input-text leading-input-text">
                         {task.feedback}
                       </div>
                     </div>
@@ -233,11 +247,11 @@ const TaskList: React.FC<TaskListProps> = ({
           ))}
         </div>
       )}
-      {isInteractive && tasks.every((task) => task.status === "completed") && (
-        <div className="bg-green-50 text-green-800 p-2 rounded-md text-sm">
+      {/* {isInteractive && tasks.every((task) => task.status === "completed") && (
+        <div className="bg-green-50 text-green-800 p-2 rounded-md font-roboto font-normal text-description">
           All tasks completed!
         </div>
-      )}
+      )} */}
     </div>
   );
 };

@@ -23,11 +23,11 @@ const LocationMap: React.FC<LocationMapProps> = ({
   // This is a placeholder that shows the location information
 
   return (
-    <div className="mt-4">
+    <div className="mt-8">
       {hasValidLocation ? (
-        <div className="flex flex-col md:flex-row items-start border border-gray-200 rounded-lg overflow-hidden">
-          {/* Google Maps iframe - smaller height and responsive width */}
-          <div className="h-48 w-full md:w-1/2">
+        <div className="flex flex-col md:flex-row items-start border border-gray-200 rounded-button overflow-hidden">
+          {/* Google Maps iframe - with specified dimensions */}
+          <div className="h-map w-map md:w-map">
             <iframe
               title={`${title} Map`}
               width="100%"
@@ -37,8 +37,8 @@ const LocationMap: React.FC<LocationMapProps> = ({
               allowFullScreen
             ></iframe>
           </div>
-          {/* Address on the right side for desktop, below for mobile */}
-          <div className="p-4 bg-white w-full md:w-1/2">
+          {/* Address on the right side with 20px gap */}
+          <div className="p-4 bg-white w-full md:w-1/2 md:ml-5">
             {address && (
               <div className="flex items-start">
                 <img
@@ -46,22 +46,26 @@ const LocationMap: React.FC<LocationMapProps> = ({
                   alt="location"
                   className="w-5 h-5 mt-1 mr-2"
                 />
-                <p className="text-gray-700">{address}</p>
+                <p className="font-roboto font-normal text-address leading-address tracking-address text-task-text">
+                  {address}
+                </p>
               </div>
             )}
-            <div className="text-sm text-gray-500 mt-2">
+            <div className="font-roboto font-normal text-description text-gray-500 mt-2">
               Coordinates: {location.lat}, {location.long}
             </div>
           </div>
         </div>
       ) : (
-        <div className="bg-gray-50 rounded-lg p-4 text-center">
+        <div className="bg-gray-50 rounded-button p-4 text-center">
           <img
             src={locationIcon}
             alt="location"
             className="w-8 h-8 mx-auto mb-2 opacity-50"
           />
-          <p className="text-gray-500">No location data available</p>
+          <p className="font-roboto font-normal text-description text-gray-500">
+            No location data available
+          </p>
         </div>
       )}
     </div>

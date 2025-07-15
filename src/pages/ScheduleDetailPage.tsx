@@ -17,11 +17,13 @@ import LocationMap from "../components/schedule/LocationMap";
 import ActionButtons from "../components/schedule/ActionButtons";
 import ServiceNotes from "../components/schedule/ServiceNotes";
 import type { LocationData } from "../types/scheduleOperations";
+import { useToast } from "../context/ToastContext";
 
 const ScheduleDetailPage: React.FC = () => {
   const { scheduleId } = useParams<{ scheduleId: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
 
   // Local state
   const [isActionLoading, setIsActionLoading] = useState(false);
@@ -128,28 +130,75 @@ const ScheduleDetailPage: React.FC = () => {
 
   // Notes are now read-only, so we don't need a save notes mutation
 
-  // Helper function to get current location
-  const getCurrentLocation = (): Promise<LocationData> => {
+  // Helper function to request location permission directly
+  const requestLocationPermission = (): Promise<GeolocationPosition> => {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
         reject(new Error("Geolocation is not supported by your browser"));
         return;
       }
 
+      const locationTimeout = setTimeout(() => {
+        reject(new Error("Location request timed out. Please try again."));
+      }, 10000);
+
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          resolve({
-            lat: position.coords.latitude,
-            long: position.coords.longitude,
-          });
+          clearTimeout(locationTimeout);
+          resolve(position);
         },
         (error) => {
-          reject(
-            new Error(`Unable to retrieve your location: ${error.message}`)
-          );
+          clearTimeout(locationTimeout);
+
+          // Provide more user-friendly error messages based on error code
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              reject(
+                new Error(
+                  "Location permission denied. Please enable location access in your browser settings."
+                )
+              );
+              break;
+            case error.POSITION_UNAVAILABLE:
+              reject(
+                new Error(
+                  "Location information is unavailable. Please try again later."
+                )
+              );
+              break;
+            case error.TIMEOUT:
+              reject(
+                new Error("Location request timed out. Please try again.")
+              );
+              break;
+            default:
+              reject(
+                new Error(`Unable to retrieve your location: ${error.message}`)
+              );
+          }
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
         }
       );
     });
+  };
+
+  // Helper function to get current location with improved error handling
+  const getCurrentLocation = async (): Promise<LocationData> => {
+    try {
+      // This will trigger the browser's permission prompt if permission hasn't been granted yet
+      const position = await requestLocationPermission();
+
+      return {
+        lat: position.coords.latitude,
+        long: position.coords.longitude,
+      };
+    } catch (error) {
+      throw error; // Re-throw the error to be handled by the caller
+    }
   };
 
   // Handle check-in action
@@ -160,10 +209,31 @@ const ScheduleDetailPage: React.FC = () => {
     setActionError(null);
 
     try {
-      const location = await getCurrentLocation();
-      await checkInMutation.mutateAsync({ scheduleId, location });
+      // First try to get the location
+      let location: LocationData;
+      try {
+        location = await getCurrentLocation();
+      } catch (error) {
+        // Show toast for location error
+        showToast((error as Error).message, "error");
+        setIsActionLoading(false);
+        return;
+      }
+
+      // If location is obtained successfully, proceed with check-in
+      try {
+        await checkInMutation.mutateAsync({ scheduleId, location });
+        showToast("Successfully checked in!", "success");
+      } catch (error) {
+        showToast(`Check-in failed: ${(error as Error).message}`, "error");
+        setIsActionLoading(false);
+      }
     } catch (error) {
-      setActionError(`Failed to get location: ${(error as Error).message}`);
+      // This is a fallback in case of unexpected errors
+      showToast(
+        `An unexpected error occurred: ${(error as Error).message}`,
+        "error"
+      );
       setIsActionLoading(false);
     }
   };
@@ -176,10 +246,31 @@ const ScheduleDetailPage: React.FC = () => {
     setActionError(null);
 
     try {
-      const location = await getCurrentLocation();
-      await checkOutMutation.mutateAsync({ scheduleId, location });
+      // First try to get the location
+      let location: LocationData;
+      try {
+        location = await getCurrentLocation();
+      } catch (error) {
+        // Show toast for location error
+        showToast((error as Error).message, "error");
+        setIsActionLoading(false);
+        return;
+      }
+
+      // If location is obtained successfully, proceed with check-out
+      try {
+        await checkOutMutation.mutateAsync({ scheduleId, location });
+        showToast("Successfully checked out!", "success");
+      } catch (error) {
+        showToast(`Check-out failed: ${(error as Error).message}`, "error");
+        setIsActionLoading(false);
+      }
     } catch (error) {
-      setActionError(`Failed to get location: ${(error as Error).message}`);
+      // This is a fallback in case of unexpected errors
+      showToast(
+        `An unexpected error occurred: ${(error as Error).message}`,
+        "error"
+      );
       setIsActionLoading(false);
     }
   };
@@ -193,8 +284,9 @@ const ScheduleDetailPage: React.FC = () => {
 
     try {
       await cancelCheckInMutation.mutateAsync(scheduleId);
+      showToast("Check-in cancelled successfully!", "success");
     } catch (error) {
-      // Error handling is done in the mutation
+      showToast(`Cancel check-in failed: ${(error as Error).message}`, "error");
       setIsActionLoading(false);
     }
   };
@@ -334,16 +426,18 @@ const ScheduleDetailPage: React.FC = () => {
               />
             </svg>
           </button>
-          <span className="text-lg font-semibold">Schedule Details</span>
+          <span className="font-roboto font-semibold text-task-title leading-task-title">
+            Schedule Details
+          </span>
         </div>
       </Title>
 
-      <div className="mt-4 bg-white rounded-2xl shadow-sm p-4 md:p-5">
-        <h2 className="text-xl md:text-2xl font-bold text-center text-teal-700">
+      <div className="mt-4 rounded-2xl p-4 sm:p-8">
+        <h2 className="font-roboto font-semibold text-activity leading-activity text-center text-activity-bg">
           {schedule.ServiceName}
         </h2>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center mt-3 mb-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center mt-4 sm:mt-8 mb-4 sm:mb-8">
           <img
             src={
               schedule.ClientInfo.ProfilePicture ||
@@ -353,20 +447,20 @@ const ScheduleDetailPage: React.FC = () => {
             className="w-16 h-16 rounded-full mb-2 sm:mb-0 sm:mr-3 object-cover"
           />
           <div className="text-center sm:text-left">
-            <h3 className="text-lg md:text-xl font-semibold">
+            <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text">
               {schedule.ClientInfo.FirstName} {schedule.ClientInfo.LastName}
             </h3>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-around bg-secondary rounded-xl text-gray-700 py-3 mb-4">
+        <div className="flex flex-col sm:flex-row items-center justify-around bg-secondary rounded-xl text-gray-700 py-4 mb-8">
           <div className="flex items-center mb-2 sm:mb-0">
             <img
               src={calendar}
               alt="calendar"
-              className="w-6 h-6 rounded-full mr-1"
+              className="w-6 h-6 rounded-full mr-2"
             />
-            <span className="text-sm md:text-base">
+            <span className="font-roboto font-normal text-description leading-description text-task-text">
               {formatDate(schedule.ScheduledSlot.From)}
             </span>
           </div>
@@ -374,9 +468,9 @@ const ScheduleDetailPage: React.FC = () => {
             <img
               src={clock}
               alt="clock"
-              className="w-5 h-5 rounded-full mr-1"
+              className="w-5 h-5 rounded-full mr-2"
             />
-            <span className="text-sm md:text-base">
+            <span className="font-roboto font-normal text-description leading-description text-task-text">
               {formatTimeRange(
                 schedule.ScheduledSlot.From,
                 schedule.ScheduledSlot.To
@@ -385,23 +479,31 @@ const ScheduleDetailPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold mb-2">Client Contact:</h3>
+        <div className="mb-8">
+          <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-2">
+            Client Contact:
+          </h3>
           <div className="flex items-center mb-2">
             <span className="mr-2">✉</span>
-            <span>{schedule.ClientInfo.Email}</span>
+            <span className="font-roboto font-normal text-description leading-description text-task-text">
+              {schedule.ClientInfo.Email}
+            </span>
           </div>
         </div>
 
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold mb-2">Address:</h3>
+        <div className="mb-8">
+          <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-2">
+            Address:
+          </h3>
           <div className="flex items-start">
             <img
               src={locationIcon}
               alt="location"
               className="w-5 h-5 mt-1 mr-2"
             />
-            <span>{formatAddress(schedule.ClientInfo.Location)}</span>
+            <span className="font-roboto font-normal text-description leading-description text-task-text">
+              {formatAddress(schedule.ClientInfo.Location)}
+            </span>
           </div>
         </div>
 
@@ -423,8 +525,10 @@ const ScheduleDetailPage: React.FC = () => {
 
         {/* Location Map Component for Check-in Location */}
         {(schedule.CheckinTime || visitStatus === "in_progress") && (
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-2">Clock-In Location</h3>
+          <div className="mt-24">
+            <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-8">
+              Clock-In Location
+            </h3>
             <LocationMap
               location={schedule.CheckinLocation}
               address={formatAddress(schedule.ClientInfo.Location)}
@@ -434,21 +538,26 @@ const ScheduleDetailPage: React.FC = () => {
 
         {/* Location Map Component for Checkout Location */}
         {schedule.CheckoutTime && (
-          <LocationMap
-            location={schedule.CheckoutLocation}
-            title="Check-out Location"
-          />
+          <div className="mt-24">
+            <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-8">
+              Check-out Location
+            </h3>
+            <LocationMap
+              location={schedule.CheckoutLocation}
+              title="Check-out Location"
+            />
+          </div>
         )}
 
         {/* Success/Error messages */}
         {actionSuccess && (
-          <div className="mt-4 bg-green-50 text-green-800 p-3 rounded-lg">
+          <div className="mt-16 bg-green-50 text-green-800 p-8 rounded-task font-roboto font-normal text-description leading-description">
             {actionSuccess}
           </div>
         )}
 
         {actionError && (
-          <div className="mt-4 bg-red-50 text-red-700 p-3 rounded-lg">
+          <div className="mt-16 bg-red-50 text-red-700 p-8 rounded-task font-roboto font-normal text-description leading-description">
             {actionError}
           </div>
         )}

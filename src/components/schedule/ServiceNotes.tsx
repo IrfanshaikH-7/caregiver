@@ -7,13 +7,19 @@ interface ServiceNotesProps {
 
 const ServiceNotes: React.FC<ServiceNotesProps> = ({ notes }) => {
   return (
-    <div className="mt-6">
-      <h3 className="text-lg font-semibold mb-2">Service Notes</h3>
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
+    <div className="mt-8">
+      <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-2">
+        Service Notes
+      </h3>
+      <div className="">
         {notes ? (
-          <p className="text-gray-700 whitespace-pre-wrap">{notes}</p>
+          <p className="font-roboto font-normal text-description leading-description text-task-text whitespace-pre-wrap">
+            {notes}
+          </p>
         ) : (
-          <p className="text-gray-500 italic">No notes were added.</p>
+          <p className="font-roboto font-normal text-description leading-description text-gray-500 italic">
+            No notes were added.
+          </p>
         )}
       </div>
     </div>

@@ -28,7 +28,7 @@ export const deleteSchedule = (id: string) => {
 };
 
 /**
- * Performs check-in for a schedule
+ * Performs check-in (start) for a schedule
  * @param scheduleId The ID of the schedule to check in
  * @param data Location data for check-in
  * @returns Promise with check-in response
@@ -38,9 +38,18 @@ export const checkInSchedule = async (
   data: CheckInRequest
 ): Promise<CheckInResponse> => {
   try {
+    // Format the payload according to the API requirements
+    const payload = {
+      Timestamp: new Date().toISOString(),
+      Location: {
+        lat: data.location.lat,
+        long: data.location.long,
+      },
+    };
+
     const response = await api.post(
-      `/v1/schedules/${scheduleId}/checkin`,
-      data
+      `/v1/schedules/${scheduleId}/start`,
+      payload
     );
     return response.data;
   } catch (error) {
@@ -50,7 +59,7 @@ export const checkInSchedule = async (
 };
 
 /**
- * Performs checkout for a schedule
+ * Performs checkout (end) for a schedule
  * @param scheduleId The ID of the schedule to check out
  * @param data Location data for checkout
  * @returns Promise with checkout response
@@ -60,16 +69,23 @@ export const checkOutSchedule = async (
   data: CheckOutRequest
 ): Promise<CheckOutResponse> => {
   try {
-    const response = await api.post(
-      `/v1/schedules/${scheduleId}/checkout`,
-      data
-    );
+    // Format the payload according to the API requirements
+    const payload = {
+      Timestamp: new Date().toISOString(),
+      Location: {
+        lat: data.location.lat,
+        long: data.location.long,
+      },
+    };
+
+    const response = await api.post(`/v1/schedules/${scheduleId}/end`, payload);
     return response.data;
   } catch (error) {
     console.error("Error checking out:", error);
     throw error;
   }
 };
+
 /**
  * Cancels a check-in for a schedule
  * @param scheduleId The ID of the schedule to cancel check-in
@@ -79,9 +95,12 @@ export const cancelCheckIn = async (
   scheduleId: string
 ): Promise<CancelCheckInResponse> => {
   try {
-    const response = await api.post(
-      `/v1/schedules/${scheduleId}/cancel-checkin`
-    );
+    // Format the payload according to the API requirements
+    const payload = {
+      VisitStatus: "cancelled",
+    };
+
+    const response = await api.put(`/v1/schedules/${scheduleId}`, payload);
     return response.data;
   } catch (error) {
     console.error("Error canceling check-in:", error);

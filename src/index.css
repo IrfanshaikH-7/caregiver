@@ -4,7 +4,7 @@
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
   --color-tertiary: var(--tertiary);
-  --color-caregray: var(--caregray)
+  --color-caregray: var(--caregray);
 }
 
 :root {
@@ -14,18 +14,18 @@
 
   color-scheme: light dark;
   color: #000000;
-  background-color: #ffffff;
+  background-color: #fbfbfb;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --primary: #87bdf0;
-  --secondary: #D2EEFF;
-  --tertiary: #2DA6FF14;
+  --secondary: #d2eeff;
+  --tertiary: #2da6ff14;
   --caregray: #616161;
 }
 
-html{
+html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -33,7 +33,7 @@ html{
 
 @layer base {
   body {
-    @apply px-4 md:px-24 pt-12 m-0 ;
+    @apply px-4 md:px-24 pt-12 m-0;
   }
 }
 
