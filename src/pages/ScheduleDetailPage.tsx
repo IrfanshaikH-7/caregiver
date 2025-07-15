@@ -479,7 +479,7 @@ const ScheduleDetailPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="mb-8">
+        <div className="mb-[24px]">
           <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-2">
             Client Contact:
           </h3>
@@ -491,7 +491,7 @@ const ScheduleDetailPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="mb-8">
+        <div className="mb-[24px]">
           <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-2">
             Address:
           </h3>
@@ -525,26 +525,13 @@ const ScheduleDetailPage: React.FC = () => {
 
         {/* Location Map Component for Check-in Location */}
         {(schedule.CheckinTime || visitStatus === "in_progress") && (
-          <div className="mt-24">
+          <div className="mt-[24px]">
             <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-8">
               Clock-In Location
             </h3>
             <LocationMap
               location={schedule.CheckinLocation}
-              address={formatAddress(schedule.ClientInfo.Location)}
-            />
-          </div>
-        )}
-
-        {/* Location Map Component for Checkout Location */}
-        {schedule.CheckoutTime && (
-          <div className="mt-24">
-            <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-8">
-              Check-out Location
-            </h3>
-            <LocationMap
-              location={schedule.CheckoutLocation}
-              title="Check-out Location"
+              address={schedule.ClientInfo.Location}
             />
           </div>
         )}

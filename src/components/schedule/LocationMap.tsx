@@ -2,12 +2,19 @@
 import React from "react";
 import { location as locationIcon } from "../../assets";
 
+interface AddressType {
+  street: string;
+  city: string;
+  state: string;
+  pincode: string;
+}
+
 interface LocationMapProps {
   location: {
     lat: number | null;
     long: number | null;
   };
-  address?: string;
+  address?: AddressType;
   title?: string;
 }
 
@@ -25,9 +32,9 @@ const LocationMap: React.FC<LocationMapProps> = ({
   return (
     <div className="mt-8">
       {hasValidLocation ? (
-        <div className="flex flex-col md:flex-row items-start border border-gray-200 rounded-button overflow-hidden">
-          {/* Google Maps iframe - with specified dimensions */}
-          <div className="h-map w-map md:w-map">
+        <div className="flex flex-col md:flex-row items-center overflow-hidden">
+          {/* Google Maps iframe - with square dimensions and rounded corners */}
+          <div className="h-[178px] w-[243px] md:w-map rounded-[16px] overflow-hidden">
             <iframe
               title={`${title} Map`}
               width="100%"
@@ -38,22 +45,22 @@ const LocationMap: React.FC<LocationMapProps> = ({
             ></iframe>
           </div>
           {/* Address on the right side with 20px gap */}
-          <div className="p-4 bg-white w-full md:w-1/2 md:ml-5">
+          <div className="p-4 w-full md:w-1/2 md:ml-5">
             {address && (
               <div className="flex items-start">
-                <img
-                  src={locationIcon}
-                  alt="location"
-                  className="w-5 h-5 mt-1 mr-2"
-                />
-                <p className="font-roboto font-normal text-address leading-address tracking-address text-task-text">
-                  {address}
-                </p>
+                <div className="flex flex-col">
+                  <p className="font-roboto font-normal text-address leading-address tracking-address text-task-text">
+                    {address.street}
+                  </p>
+                  <p className="font-roboto font-normal text-address leading-address tracking-address text-task-text mt-1">
+                    {address.city}, {address.state}, {address.pincode}
+                  </p>
+                </div>
               </div>
             )}
-            <div className="font-roboto font-normal text-description text-gray-500 mt-2">
+            {/* <div className="font-roboto font-normal text-description text-gray-500 mt-2">
               Coordinates: {location.lat}, {location.long}
-            </div>
+            </div> */}
           </div>
         </div>
       ) : (

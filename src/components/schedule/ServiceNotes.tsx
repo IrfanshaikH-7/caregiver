@@ -7,7 +7,7 @@ interface ServiceNotesProps {
 
 const ServiceNotes: React.FC<ServiceNotesProps> = ({ notes }) => {
   return (
-    <div className="mt-8">
+    <div className="mt-[24px]">
       <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-2">
         Service Notes
       </h3>

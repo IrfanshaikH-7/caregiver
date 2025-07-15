@@ -88,7 +88,7 @@ const TaskList: React.FC<TaskListProps> = ({
   };
 
   return (
-    <div className="mt-8">
+    <div className="mt-[24px]">
       <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-4">
         Tasks:
       </h3>
