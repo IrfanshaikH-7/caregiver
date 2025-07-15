@@ -1,25 +1,45 @@
 import type { Task } from "./task";
 
 // src/types/schedule.ts
+export interface ClientInfo {
+  ID: string;
+  UserName: string;
+  Email: string;
+  FirstName: string;
+  LastName: string;
+  Location: {
+    house_number: string;
+    street: string;
+    city: string;
+    state: string;
+    pincode: string;
+    lat: number;
+    long: number;
+  };
+}
+
+export interface ScheduledSlot {
+  From: string;
+  To: string;
+}
+
+export interface Location {
+  lat: number | null;
+  long: number | null;
+}
+
 export interface Schedule {
-  id: string;
-  client_user_id: string;
+  ID: string;
+  ClientUserID: string;
+  ClientInfo: ClientInfo;
   AssignedUserID: string;
-  scheduled_slot: {
-    from: string;
-    to: string;
-  };
-  visit_status: 'upcoming' | 'in_progress' | 'completed' | 'missed';
-  checkin_time: string | null;
-  checkout_time: string | null;
-  checkin_location: {
-    lat: number | null;
-    long: number | null;
-  };
-  checkout_location: {
-    lat: number | null;
-    long: number | null;
-  };
-  tasks: Task[];
-  service_note: string | null;
+  ServiceName: string;
+  ScheduledSlot: ScheduledSlot;
+  VisitStatus: 'upcoming' | 'in_progress' | 'completed' | 'missed';
+  CheckinTime: string | null;
+  CheckoutTime: string | null;
+  CheckinLocation: Location;
+  CheckoutLocation: Location;
+  Tasks: Task[];
+  ServiceNote: string | null;
 }
