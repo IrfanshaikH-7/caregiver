@@ -15,6 +15,7 @@ import LocationMap from "../components/schedule/LocationMap";
 import ActionButtons from "../components/schedule/ActionButtons";
 import ServiceNotes from "../components/schedule/ServiceNotes";
 import ScheduleCard from "../components/schedule/ScheduleCard";
+import ScheduleCompletionModal from "../components/schedule/ScheduleCompletionModal";
 import type { LocationData } from "../types/scheduleOperations";
 import { useToast } from "../context/ToastContext";
 
@@ -28,6 +29,7 @@ const ScheduleDetailPage: React.FC = () => {
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
 
   // Fetch schedule details
   const {
@@ -73,9 +75,8 @@ const ScheduleDetailPage: React.FC = () => {
       location: LocationData;
     }) => checkOutSchedule(scheduleId, { location }),
     onSuccess: () => {
-      setActionSuccess("Successfully checked out!");
       queryClient.invalidateQueries({ queryKey: ["schedule", scheduleId] });
-      setTimeout(() => setActionSuccess(null), 3000);
+      setShowCompletionModal(true);
     },
     onError: (error: Error) => {
       setActionError(`Check-out failed: ${error.message}`);
@@ -376,6 +377,37 @@ const ScheduleDetailPage: React.FC = () => {
     return `${formatTime(from)} - ${formatTime(to)}`;
   };
 
+  // Calculate duration
+  const calculateDuration = (from: string, to: string) => {
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+    const diffMs = toDate.getTime() - fromDate.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (diffHours === 1 && diffMinutes === 0) {
+      return "1 hour";
+    } else if (diffHours === 1) {
+      return `1 hour ${diffMinutes} min`;
+    } else if (diffHours > 1 && diffMinutes === 0) {
+      return `${diffHours} hours`;
+    } else if (diffHours > 1) {
+      return `${diffHours} hours ${diffMinutes} min`;
+    } else {
+      return `${diffMinutes} min`;
+    }
+  };
+
+  // Handle modal actions
+  const handleCloseModal = () => {
+    setShowCompletionModal(false);
+  };
+
+  const handleGoHome = () => {
+    setShowCompletionModal(false);
+    navigate("/dashboard");
+  };
+
   return (
     <>
       {/* Header with reduced width to match content */}
@@ -481,6 +513,22 @@ const ScheduleDetailPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Schedule Completion Modal */}
+      <ScheduleCompletionModal
+        isOpen={showCompletionModal}
+        onClose={handleCloseModal}
+        onGoHome={handleGoHome}
+        scheduleDate={formatDate(schedule.ScheduledSlot.From)}
+        scheduleTime={formatTimeRange(
+          schedule.ScheduledSlot.From,
+          schedule.ScheduledSlot.To
+        )}
+        duration={calculateDuration(
+          schedule.ScheduledSlot.From,
+          schedule.ScheduledSlot.To
+        )}
+      />
     </>
   );
 };
