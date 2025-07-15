@@ -61,6 +61,21 @@ export default {
         "button-select": "44px",
         map: "178px",
       },
+      animation: {
+        shimmer: "shimmer 2s linear infinite",
+        "skeleton-pulse":
+          "skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      },
+      keyframes: {
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        "skeleton-pulse": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
+        },
+      },
     },
   },
   plugins: [],

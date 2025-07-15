@@ -1,5 +1,5 @@
 // src/pages/ScheduleDetailPage.tsx
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getScheduleById } from "../api/queries/scheduleQueries";
@@ -10,12 +10,16 @@ import {
   updateTask,
 } from "../api/mutations/scheduleMutations";
 import type { DetailedSchedule } from "../types/schedule";
-import TaskList from "../components/schedule/TaskList";
-import LocationMap from "../components/schedule/LocationMap";
+import LazyTaskList from "../components/schedule/LazyTaskList";
+import LazyLocationMap from "../components/schedule/LazyLocationMap";
 import ActionButtons from "../components/schedule/ActionButtons";
 import ServiceNotes from "../components/schedule/ServiceNotes";
-import ScheduleCard from "../components/schedule/ScheduleCard";
+import LazyScheduleCard from "../components/schedule/LazyScheduleCard";
 import ScheduleCompletionModal from "../components/schedule/ScheduleCompletionModal";
+import ScheduleDetailSkeleton from "../components/schedule/ScheduleDetailSkeleton";
+import TaskListSkeleton from "../components/schedule/TaskListSkeleton";
+import LocationMapSkeleton from "../components/schedule/LocationMapSkeleton";
+import ErrorBoundary from "../components/common/ErrorBoundary";
 import type { LocationData } from "../types/scheduleOperations";
 import { useToast } from "../context/ToastContext";
 
@@ -310,11 +314,7 @@ const ScheduleDetailPage: React.FC = () => {
   // Notes are now read-only, so we don't need a handleSaveNotes function
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        Loading schedule details...
-      </div>
-    );
+    return <ScheduleDetailSkeleton />;
   }
 
   if (error || !schedule) {
@@ -442,36 +442,40 @@ const ScheduleDetailPage: React.FC = () => {
       <div className="flex flex-col items-center w-full">
         <div className="w-full ">
           <div className="rounded-2xl p-4 sm:px-0">
-            <ScheduleCard
-              id={schedule.ID}
-              status={visitStatus}
-              patientName={`${schedule.ClientInfo.FirstName} ${schedule.ClientInfo.LastName}`}
-              serviceName={schedule.ServiceName}
-              location={formatAddress(schedule.ClientInfo.Location)}
-              date={formatDate(schedule.ScheduledSlot.From)}
-              timeRange={formatTimeRange(
-                schedule.ScheduledSlot.From,
-                schedule.ScheduledSlot.To
-              )}
-              profilePicture={schedule.ClientInfo.ProfilePicture}
-              clientInfo={schedule.ClientInfo}
-              variant="centered"
-              asLink={false}
-              className="mb-6"
-            />
+            <ErrorBoundary>
+              <LazyScheduleCard
+                id={schedule.ID}
+                status={visitStatus}
+                patientName={`${schedule.ClientInfo.FirstName} ${schedule.ClientInfo.LastName}`}
+                serviceName={schedule.ServiceName}
+                location={formatAddress(schedule.ClientInfo.Location)}
+                date={formatDate(schedule.ScheduledSlot.From)}
+                timeRange={formatTimeRange(
+                  schedule.ScheduledSlot.From,
+                  schedule.ScheduledSlot.To
+                )}
+                profilePicture={schedule.ClientInfo.ProfilePicture}
+                clientInfo={schedule.ClientInfo}
+                variant="centered"
+                asLink={false}
+                className="mb-6"
+              />
+            </ErrorBoundary>
 
             {/* Task List Component */}
-            <TaskList
-              tasks={schedule.Tasks.map((task) => ({
-                id: task.ID,
-                title: task.Title,
-                description: task.Description,
-                status: task.Status.toLowerCase() as "pending" | "completed",
-                feedback: task.Feedback || undefined,
-              }))}
-              visitStatus={visitStatus}
-              onTaskUpdate={handleTaskUpdate}
-            />
+            <ErrorBoundary>
+              <LazyTaskList
+                tasks={schedule.Tasks.map((task) => ({
+                  id: task.ID,
+                  title: task.Title,
+                  description: task.Description,
+                  status: task.Status.toLowerCase() as "pending" | "completed",
+                  feedback: task.Feedback || undefined,
+                }))}
+                visitStatus={visitStatus}
+                onTaskUpdate={handleTaskUpdate}
+              />
+            </ErrorBoundary>
 
             {/* Service Notes Component */}
             <ServiceNotes notes={schedule.ServiceNote} />
@@ -482,10 +486,12 @@ const ScheduleDetailPage: React.FC = () => {
                 <h3 className="font-roboto font-semibold text-task-title leading-task-title text-task-text mb-8">
                   Clock-In Location
                 </h3>
-                <LocationMap
-                  location={schedule.CheckinLocation}
-                  address={schedule.ClientInfo.Location}
-                />
+                <ErrorBoundary>
+                  <LazyLocationMap
+                    location={schedule.CheckinLocation}
+                    address={schedule.ClientInfo.Location}
+                  />
+                </ErrorBoundary>
               </div>
             )}
 
