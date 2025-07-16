@@ -122,14 +122,14 @@ const TaskList: React.FC<TaskListProps> = ({
                       onClick={() => handleTaskToggle(task.id, "yes")}
                       className={`flex items-center ${
                         selectedOptions[task.id] === "yes"
-                          ? "text-green-600"
+                          ? "text-green-600 !bg-[#2DA6FF1F]"
                           : "text-gray-500"
                       } w-button-select h-button-select rounded-button bg-button-select-bg p-2`}
                     >
                       <svg
                         className={`h-5 w-5 mr-1 ${
                           selectedOptions[task.id] === "yes"
-                            ? "text-green-600"
+                            ? "text-green-600 "
                             : "text-gray-400"
                         }`}
                         fill="none"
@@ -152,7 +152,7 @@ const TaskList: React.FC<TaskListProps> = ({
                       onClick={() => handleTaskToggle(task.id, "no")}
                       className={`flex items-center ${
                         selectedOptions[task.id] === "no"
-                          ? "text-red-500"
+                          ? "text-red-500 !bg-[#2DA6FF1F]"
                           : "text-gray-500"
                       } w-button-select h-button-select rounded-button bg-button-select-bg p-2`}
                     >
