@@ -1,6 +1,9 @@
 // src/components/schedule/ScheduleCompletionModal.tsx
 import React from "react";
 import Modal from "../common/Modal";
+import CompletionIcon from "../../assets/icons/completed.svg";
+import TimeIcon from "../../assets/icons/clock.svg";
+import calenderIcon from "../../assets/icons/calendar.svg";
 
 interface ScheduleCompletionModalProps {
   isOpen: boolean;
@@ -19,78 +22,20 @@ const ScheduleCompletionModal: React.FC<ScheduleCompletionModalProps> = ({
   scheduleTime,
   duration,
 }) => {
-  const CompletionIcon = () => (
-    <div className="relative flex items-center justify-center">
-      {/* Decorative elements */}
-      <div className="absolute">
-        {/* Orange dots and lines */}
-        <div className="absolute -top-8 -left-8 w-2 h-2 bg-orange-400 rounded-full"></div>
-        <div className="absolute -top-4 left-12 w-1 h-1 bg-orange-300 rounded-full"></div>
-        <div className="absolute top-8 -right-6 w-1.5 h-1.5 bg-orange-300 rounded-full"></div>
-        <div className="absolute -bottom-6 -left-4 w-1 h-1 bg-orange-400 rounded-full"></div>
-
-        {/* Curved lines */}
-        <svg className="absolute -top-6 left-8 w-8 h-8" viewBox="0 0 32 32">
-          <path
-            d="M4 16 Q 16 4 28 16"
-            stroke="#FB923C"
-            strokeWidth="2"
-            fill="none"
-          />
-        </svg>
-
-        <svg className="absolute top-6 -right-8 w-6 h-6" viewBox="0 0 24 24">
-          <path
-            d="M2 12 Q 12 2 22 12"
-            stroke="#FDBA74"
-            strokeWidth="1.5"
-            fill="none"
-          />
-        </svg>
-
-        {/* Purple/pink elements */}
-        <div className="absolute -top-2 right-8 w-1 h-1 bg-purple-300 rounded-full"></div>
-        <div className="absolute bottom-4 left-8 w-1.5 h-1.5 bg-pink-300 rounded-full"></div>
-
-        {/* Blue/teal elements */}
-        <div className="absolute top-2 -left-6 w-1 h-1 bg-teal-300 rounded-full"></div>
-        <div className="absolute -bottom-2 right-4 w-1 h-1 bg-blue-300 rounded-full"></div>
-      </div>
-
-      {/* Main checkmark circle */}
-      <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center relative z-10">
-        <svg
-          className="w-8 h-8 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="3"
-            d="M5 13l4 4L19 7"
-          ></path>
-        </svg>
-      </div>
-    </div>
-  );
-
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      className="w-full h-full sm:w-auto sm:h-auto"
+      className="w-full h-full flex items-center justify-center bg-opacity-0 bg-[#0d5d590]"
     >
-      {/* Mobile Design - Full Screen with Green Background */}
-      <div className="sm:hidden w-full h-full bg-teal-600 flex flex-col items-center justify-center px-8 text-white relative">
+      <div className="md:rounded-[20px] md:bg-white md:h-[452px] md:w-[500px] md:shadow-lg md:relative bg-[#0d5d59] fixed inset-0 flex flex-col">
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-8 right-8 text-white hover:text-gray-200"
+          className="!bg-opacity-0 md:!bg-white sm:!bg-[#0D5D59]	 absolute md:top-4 md:right-4 top-6 right-6 sm:text-white md:text-black text-gray-500 md:hover:text-gray-500 hover:text-gray-400"
         >
           <svg
-            className="w-6 h-6"
+            className="md:w-5 md:h-5 w-6 h-6"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -105,130 +50,57 @@ const ScheduleCompletionModal: React.FC<ScheduleCompletionModalProps> = ({
         </button>
 
         {/* Content */}
-        <div className="flex flex-col items-center text-center space-y-8">
-          <CompletionIcon />
+        <div className="flex-1 flex flex-col items-center justify-center text-center md:p-6 px-8 ">
+          {/* Completion icon */}
+          <img src={CompletionIcon} className="w-[140px] h-[140px] md:mb-4" />
 
-          <h2 className="text-2xl font-roboto font-medium">
+          {/* Title */}
+          <h2 className="md:text-[24px] md:font-bold md:text-gray-900 md:mb-4 text-[24px] font-roboto font-bold text-white mt-6">
             Schedule Completed
           </h2>
 
-          <div className="space-y-4 text-center">
-            <div className="flex items-center space-x-3">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-              <span className="text-lg">{scheduleDate}</span>
+          {/* Date and time info */}
+          <div className="md:w-full md:border-none md:border-gray-100 md:rounded-none md:bg-white md:p-4 md:mb-6 bg-[#FFFFFF20] md:bg-[#0A4A47] rounded-lg p-4 mt-6 w-full">
+            <div className="flex items-center space-x-3 mb-3">
+              <img
+                src={calenderIcon}
+                alt="Calendar"
+                className=" md:h-[20px] filter grayscale brightness-[1%]"
+              />
+              <span className="md:text-gray-700 text-white">
+                {scheduleDate}
+              </span>
             </div>
 
             <div className="flex items-center space-x-3">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12,6 12,12 16,14"></polyline>
-              </svg>
+              <img
+                src={TimeIcon}
+                alt="Clock"
+                className=" md:h-[20px] filter grayscale brightness-[1%]"
+              />
               <div className="text-left">
-                <div className="text-lg">{scheduleTime}</div>
-                <div className="text-sm opacity-80">({duration})</div>
+                <div className="md:text-gray-700 text-white">
+                  {scheduleTime}
+                  {!scheduleTime.includes("SGT") && scheduleTime.trim() !== ""
+                    ? " SGT"
+                    : ""}
+                </div>
+                <div className="text-sm md:text-gray-500 text-gray-300">
+                  ({duration})
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Go to Home button */}
-        <div className="absolute bottom-8 left-8 right-8">
+        <div className="md:px-6 md:pb-6 p-8 md:relative md:top-[-85px] ">
           <button
             onClick={onGoHome}
-            className="w-full py-4 border-2 border-white text-white rounded-button font-roboto font-normal text-button-text leading-button-text hover:bg-white hover:text-teal-600 transition-colors"
+            className="w-full py-3 md:!border md:!border-gray-600 sm:!border sm:!border-white sm:!bg-[#0D5D59]	  sm:text-white  md:!text-black md:!text-[15px] md:hover:bg-gray-50 bg-white text-[#0D5D59] hover:bg-gray-100 rounded-full font-medium transition-colors"
           >
             Go to Home
           </button>
-        </div>
-      </div>
-
-      {/* Desktop Design - Modal with White Background */}
-      <div className="hidden sm:block bg-white rounded-2xl p-8 max-w-md mx-4 relative">
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-6 right-6 text-gray-400 hover:text-gray-600"
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M6 18L18 6M6 6l12 12"
-            ></path>
-          </svg>
-        </button>
-
-        {/* Content */}
-        <div className="flex flex-col items-center text-center space-y-6 pt-4">
-          <CompletionIcon />
-
-          <h2 className="text-2xl font-roboto font-medium text-gray-900">
-            Schedule Completed
-          </h2>
-
-          <div className="space-y-3 text-gray-700">
-            <div className="flex items-center space-x-3">
-              <svg
-                className="w-5 h-5 text-gray-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-              <span className="text-lg">{scheduleDate}</span>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <svg
-                className="w-5 h-5 text-gray-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12,6 12,12 16,14"></polyline>
-              </svg>
-              <div className="text-left">
-                <div className="text-lg">{scheduleTime}</div>
-                <div className="text-sm text-gray-500">({duration})</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Go to Home button */}
-          <div className="w-full pt-4">
-            <button
-              onClick={onGoHome}
-              className="w-full py-4 border-2 border-gray-300 text-gray-700 rounded-button font-roboto font-normal text-button-text leading-button-text hover:bg-gray-50 transition-colors"
-            >
-              Go to Home
-            </button>
-          </div>
         </div>
       </div>
     </Modal>
