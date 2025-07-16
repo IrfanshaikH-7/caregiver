@@ -4,7 +4,7 @@
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
   --color-tertiary: var(--tertiary);
-  --color-caregray: var(--caregray)
+  --color-caregray: var(--caregray);
 }
 
 :root {
@@ -14,18 +14,18 @@
 
   color-scheme: light dark;
   color: #000000;
-  background-color: #ffffff;
+  background-color: #fbfbfb;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --primary: #87bdf0;
-  --secondary: #D2EEFF;
-  --tertiary: #0D5D59;
+  --secondary: #d2eeff;
+  --tertiary: #2da6ff14;
   --caregray: #616161;
 }
 
-html{
+html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -33,7 +33,7 @@ html{
 
 @layer base {
   body {
-    @apply px-4 md:px-24 pt-4 md:pt-12 m-0 ;
+    @apply px-4 md:px-24 pt-8 m-0;
   }
 }
 
@@ -51,10 +51,24 @@ h1 {
   line-height: 1.1;
 }
 
-button{
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #f9f9f9;
   cursor: pointer;
 }
 
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
 
 /* Optional: Keep dark mode as an option for users who prefer it */
 @media (prefers-color-scheme: dark) {
