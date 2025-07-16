@@ -25,7 +25,13 @@ export default function MobileBottomBar() {
         const userId = parsedUserData.ID || parsedUserData.id;
         return userId ? `/profile/${userId}` : "/profile";
       } catch (error) {
-        console.error("Error parsing userData from localStorage:", error);
+        // Log error only in development
+        if (
+          typeof process !== "undefined" &&
+          process.env.NODE_ENV === "development"
+        ) {
+          console.error("Error parsing userData from localStorage:", error);
+        }
         return "/profile";
       }
     }

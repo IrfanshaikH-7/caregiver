@@ -16,7 +16,7 @@ const LocationMapSkeleton: React.FC<LocationMapSkeletonProps> = ({
       {showTitle && <Skeleton width={150} height={20} className="mb-4" />}
 
       {/* Map container skeleton */}
-      <div className="relative bg-gradient-to-br from-teal-100 via-teal-200 to-blue-200 animate-shimmer bg-[length:200%_100%] rounded-task h-48 w-full overflow-hidden">
+      <div className="relative bg-gradient-to-br from-teal-100 via-teal-200 to-blue-200 animate-shimmer bg-shimmer rounded-task h-48 w-full overflow-hidden">
         {/* Simulated map elements */}
         <div className="absolute inset-0 flex items-center justify-center">
           {/* Center marker */}

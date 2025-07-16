@@ -14,7 +14,7 @@ const ScheduleCardSkeleton: React.FC<ScheduleCardSkeletonProps> = ({
   if (variant === "centered") {
     return (
       <div
-        className={`rounded-2xl bg-gradient-to-r from-blue-50 via-blue-100 to-blue-50 animate-shimmer bg-[length:200%_100%] p-4 ${className}`}
+        className={`rounded-2xl bg-gradient-to-r from-blue-50 via-blue-100 to-blue-50 animate-shimmer bg-shimmer p-4 ${className}`}
       >
         <div className="flex flex-col items-center text-center py-2 px-2">
           {/* Service Name */}
@@ -32,7 +32,7 @@ const ScheduleCardSkeleton: React.FC<ScheduleCardSkeletonProps> = ({
           </div>
 
           {/* Date and Time Section */}
-          <div className="w-full bg-gradient-to-r from-teal-50 via-teal-100 to-teal-50 animate-shimmer bg-[length:200%_100%] rounded-xl py-3 px-4 mt-4">
+          <div className="w-full bg-gradient-to-r from-teal-50 via-teal-100 to-teal-50 animate-shimmer bg-shimmer rounded-xl py-3 px-4 mt-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center w-full">
                 <Skeleton
@@ -64,7 +64,7 @@ const ScheduleCardSkeleton: React.FC<ScheduleCardSkeletonProps> = ({
 
   return (
     <div
-      className={`p-5 rounded-2xl shadow-sm bg-gradient-to-r from-gray-50 via-gray-100 to-gray-50 animate-shimmer bg-[length:200%_100%] ${className}`}
+      className={`p-5 rounded-2xl shadow-sm bg-gradient-to-r from-gray-50 via-gray-100 to-gray-50 animate-shimmer bg-shimmer ${className}`}
     >
       {/* Status and More Button */}
       <div className="flex justify-between items-start mb-2">
@@ -93,7 +93,7 @@ const ScheduleCardSkeleton: React.FC<ScheduleCardSkeletonProps> = ({
       </div>
 
       {/* Date and Time Section */}
-      <div className="bg-gradient-to-r from-teal-50 via-teal-100 to-teal-50 animate-shimmer bg-[length:200%_100%] rounded-xl py-3 mb-4">
+      <div className="bg-gradient-to-r from-teal-50 via-teal-100 to-teal-50 animate-shimmer bg-shimmer rounded-xl py-3 mb-4">
         <div className="flex items-center justify-around">
           <div className="flex items-center">
             <Skeleton
@@ -121,7 +121,7 @@ const ScheduleCardSkeleton: React.FC<ScheduleCardSkeletonProps> = ({
       <Skeleton
         width="100%"
         height={44}
-        className="bg-gradient-to-r from-teal-200 via-teal-300 to-teal-200 animate-shimmer bg-[length:200%_100%] rounded-button"
+        className="bg-gradient-to-r from-teal-200 via-teal-300 to-teal-200 animate-shimmer bg-shimmer rounded-button"
       />
     </div>
   );

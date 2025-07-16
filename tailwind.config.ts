@@ -68,13 +68,22 @@ export default {
       },
       keyframes: {
         shimmer: {
-          "0%": { backgroundPosition: "-200% 0" },
-          "100%": { backgroundPosition: "200% 0" },
+          "0%": {
+            backgroundPosition: "-200% 0",
+            backgroundSize: "200% 100%",
+          },
+          "100%": {
+            backgroundPosition: "200% 0",
+            backgroundSize: "200% 100%",
+          },
         },
         "skeleton-pulse": {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.5" },
         },
+      },
+      backgroundSize: {
+        shimmer: "200% 100%",
       },
     },
   },

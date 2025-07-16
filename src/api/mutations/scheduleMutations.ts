@@ -75,7 +75,13 @@ export const checkInSchedule = async (
     );
     return response.data;
   } catch (error) {
-    console.error("Error checking in:", error);
+    // Log error only in development
+    if (
+      typeof process !== "undefined" &&
+      process.env.NODE_ENV === "development"
+    ) {
+      console.error("Error checking in:", error);
+    }
     throw error;
   }
 };
@@ -103,7 +109,13 @@ export const checkOutSchedule = async (
     const response = await api.post(`/v1/schedules/${scheduleId}/end`, payload);
     return response.data;
   } catch (error) {
-    console.error("Error checking out:", error);
+    // Log error only in development
+    if (
+      typeof process !== "undefined" &&
+      process.env.NODE_ENV === "development"
+    ) {
+      console.error("Error checking out:", error);
+    }
     throw error;
   }
 };
@@ -125,7 +137,13 @@ export const cancelCheckIn = async (
     const response = await api.put(`/v1/schedules/${scheduleId}`, payload);
     return response.data;
   } catch (error) {
-    console.error("Error canceling check-in:", error);
+    // Log error only in development
+    if (
+      typeof process !== "undefined" &&
+      process.env.NODE_ENV === "development"
+    ) {
+      console.error("Error canceling check-in:", error);
+    }
     throw error;
   }
 };
@@ -148,7 +166,13 @@ export const updateTaskStatus = async (
     );
     return response.data;
   } catch (error) {
-    console.error("Error updating task:", error);
+    // Log error only in development
+    if (
+      typeof process !== "undefined" &&
+      process.env.NODE_ENV === "development"
+    ) {
+      console.error("Error updating task:", error);
+    }
     throw error;
   }
 };
@@ -166,7 +190,13 @@ export const saveServiceNotes = async (
     const response = await api.patch(`/v1/schedules/${scheduleId}/notes`, data);
     return response.data;
   } catch (error) {
-    console.error("Error saving notes:", error);
+    // Log error only in development
+    if (
+      typeof process !== "undefined" &&
+      process.env.NODE_ENV === "development"
+    ) {
+      console.error("Error saving notes:", error);
+    }
     throw error;
   }
 };
@@ -196,7 +226,13 @@ export const updateTask = async (
     const response = await api.post(`/v1/tasks/${taskId}/update`, data);
     return response.data;
   } catch (error) {
-    console.error("Error updating task:", error);
+    // Log error only in development
+    if (
+      typeof process !== "undefined" &&
+      process.env.NODE_ENV === "development"
+    ) {
+      console.error("Error updating task:", error);
+    }
     throw error;
   }
 };

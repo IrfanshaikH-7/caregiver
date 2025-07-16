@@ -23,7 +23,7 @@ const ScheduleDetailSkeleton: React.FC = () => {
         <div className="w-full">
           <div className="rounded-2xl p-4 sm:px-0">
             {/* Schedule Card Skeleton */}
-            <div className="rounded-2xl bg-gradient-to-r from-blue-50 via-blue-100 to-blue-50 animate-shimmer bg-[length:200%_100%] p-4 mb-6">
+            <div className="rounded-2xl bg-gradient-to-r from-blue-50 via-blue-100 to-blue-50 animate-shimmer bg-shimmer p-4 mb-6">
               <div className="flex flex-col items-center text-center py-2 px-2">
                 {/* Service Name */}
                 <Skeleton width={200} height={20} className="mb-4" />
@@ -40,7 +40,7 @@ const ScheduleDetailSkeleton: React.FC = () => {
                 </div>
 
                 {/* Date and Time Section */}
-                <div className="w-full bg-gradient-to-r from-teal-50 via-teal-100 to-teal-50 animate-shimmer bg-[length:200%_100%] rounded-xl py-3 px-4 mt-4">
+                <div className="w-full bg-gradient-to-r from-teal-50 via-teal-100 to-teal-50 animate-shimmer bg-shimmer rounded-xl py-3 px-4 mt-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center w-full">
                       <Skeleton
@@ -75,7 +75,7 @@ const ScheduleDetailSkeleton: React.FC = () => {
                 {[1, 2, 3].map((index) => (
                   <div
                     key={index}
-                    className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-shimmer bg-[length:200%_100%] rounded-task p-4"
+                    className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-shimmer bg-shimmer rounded-task p-4"
                   >
                     <div className="flex items-start space-x-3">
                       <Skeleton variant="circular" width={20} height={20} />
@@ -92,7 +92,7 @@ const ScheduleDetailSkeleton: React.FC = () => {
             {/* Service Notes Skeleton */}
             <div className="mb-6">
               <Skeleton width={120} height={20} className="mb-4" />
-              <div className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-shimmer bg-[length:200%_100%] rounded-task p-4">
+              <div className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-shimmer bg-shimmer rounded-task p-4">
                 <Skeleton width="100%" height={80} />
               </div>
             </div>
@@ -100,7 +100,7 @@ const ScheduleDetailSkeleton: React.FC = () => {
             {/* Location Map Skeleton */}
             <div className="mb-6">
               <Skeleton width={150} height={20} className="mb-4" />
-              <div className="bg-gradient-to-r from-teal-100 via-teal-200 to-teal-100 animate-shimmer bg-[length:200%_100%] rounded-task h-48 w-full" />
+              <div className="bg-gradient-to-r from-teal-100 via-teal-200 to-teal-100 animate-shimmer bg-shimmer rounded-task h-48 w-full" />
             </div>
 
             {/* Action Buttons Skeleton */}
@@ -109,12 +109,12 @@ const ScheduleDetailSkeleton: React.FC = () => {
                 <Skeleton
                   width="100%"
                   height={56}
-                  className="bg-gradient-to-r from-teal-200 via-teal-300 to-teal-200 animate-shimmer bg-[length:200%_100%] rounded-button sm:flex-1"
+                  className="bg-gradient-to-r from-teal-200 via-teal-300 to-teal-200 animate-shimmer bg-shimmer rounded-button sm:flex-1"
                 />
                 <Skeleton
                   width="100%"
                   height={56}
-                  className="bg-gradient-to-r from-teal-200 via-teal-300 to-teal-200 animate-shimmer bg-[length:200%_100%] rounded-button sm:flex-1 sm:block hidden"
+                  className="bg-gradient-to-r from-teal-200 via-teal-300 to-teal-200 animate-shimmer bg-shimmer rounded-button sm:flex-1 sm:block hidden"
                 />
               </div>
             </div>

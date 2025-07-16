@@ -21,7 +21,7 @@ const DashboardSkeleton: React.FC = () => {
         {[0, 1, 2].map((index) => (
           <div
             key={index}
-            className={`p-4 rounded-2xl shadow-sm bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-shimmer bg-[length:200%_100%] text-center ${
+            className={`p-4 rounded-2xl shadow-sm bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-shimmer bg-shimmer text-center ${
               index === 0 ? "col-span-2 md:col-span-1" : "col-span-1"
             }`}
           >
@@ -46,7 +46,7 @@ const DashboardSkeleton: React.FC = () => {
           <Skeleton
             width={40}
             height={28}
-            className="bg-gradient-to-r from-teal-200 via-teal-300 to-teal-200 animate-shimmer bg-[length:200%_100%] rounded-lg"
+            className="bg-gradient-to-r from-teal-200 via-teal-300 to-teal-200 animate-shimmer bg-shimmer rounded-lg"
           />
         </div>
         <div className="block sm:hidden">

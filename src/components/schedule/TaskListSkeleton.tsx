@@ -21,7 +21,7 @@ const TaskListSkeleton: React.FC<TaskListSkeletonProps> = ({
         {Array.from({ length: taskCount }).map((_, index) => (
           <div
             key={index}
-            className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-shimmer bg-[length:200%_100%] rounded-task p-4"
+            className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-shimmer bg-shimmer rounded-task p-4"
           >
             <div className="flex items-start space-x-3">
               {/* Checkbox skeleton */}
@@ -58,7 +58,7 @@ const TaskListSkeleton: React.FC<TaskListSkeletonProps> = ({
                 <Skeleton
                   width={78}
                   height={44}
-                  className="bg-gradient-to-r from-teal-100 via-teal-200 to-teal-100 animate-shimmer bg-[length:200%_100%] rounded-button"
+                  className="bg-gradient-to-r from-teal-100 via-teal-200 to-teal-100 animate-shimmer bg-shimmer rounded-button"
                 />
               </div>
             </div>
