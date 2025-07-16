@@ -17,8 +17,6 @@ import ServiceNotes from "../components/schedule/ServiceNotes";
 import LazyScheduleCard from "../components/schedule/LazyScheduleCard";
 import ScheduleCompletionModal from "../components/schedule/ScheduleCompletionModal";
 import ScheduleDetailSkeleton from "../components/schedule/ScheduleDetailSkeleton";
-import TaskListSkeleton from "../components/schedule/TaskListSkeleton";
-import LocationMapSkeleton from "../components/schedule/LocationMapSkeleton";
 import ErrorBoundary from "../components/common/ErrorBoundary";
 import type { LocationData } from "../types/scheduleOperations";
 import { useToast } from "../context/ToastContext";
@@ -418,7 +416,7 @@ const ScheduleDetailPage: React.FC = () => {
 
   const handleGoHome = () => {
     setShowCompletionModal(false);
-    navigate("/dashboard");
+    navigate("/");
   };
 
   return (

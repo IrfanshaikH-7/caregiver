@@ -5,8 +5,8 @@ import api from "../../lib/axios";
 export const getSchedule = (id: string): Promise<Schedule[]> => {
   return (
     api
-      .get(`/v1/schedules/today/${id}`)
-      // .get(`/v1/schedules/`)
+      // .get(`/v1/schedules/today/${id}`)
+      .get(`/v1/schedules/`)
       .then((response) => response.data)
       .catch((error) => {
         // Log error for debugging but don't expose to user
